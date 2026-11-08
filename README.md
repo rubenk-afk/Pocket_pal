@@ -1,73 +1,75 @@
-# Welcome to your Lovable project
+# Pocket Pal
 
-## Project info
+A student-focused personal finance tracker built with React, TypeScript and Vite. Record income and expenses, manage manual account balances, track loans, and compare monthly spending with a budget.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- **Dashboard:** account balances, current budget status, recent transactions and upcoming bills.
+- **Accounts:** independent Bank Account and FamPay balances, editable manually.
+- **Transactions:** categorized income and expenses, dates, times and descriptions; deleting a transaction reverses its balance change.
+- **Loans:** track money lent or borrowed and mark records settled.
+- **Budgets:** monthly spending limits with an in-app warning at 80%.
+- **Reminders:** due-date lists with active/inactive status and recurrence metadata.
+- **Analytics and calendar:** visual spending summaries and daily expense totals.
+- Responsive navigation and system/light/dark theme support.
 
-There are several ways of editing your application.
+## Run locally
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Requires Node.js **22.18 or newer** and npm. No API keys or backend are required.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+git clone https://github.com/rubenkennedy1810-maker/pocket-pal.git
+cd pocket-pal
+npm ci
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Open the local URL printed by Vite (usually http://localhost:5173).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm test           # Finance regression tests; no third-party test dependencies
+npm run typecheck  # TypeScript application check
+npm run lint       # ESLint
+npm run build      # Production files in dist/
+npm run preview    # Serve the production build locally
+```
 
-**Use GitHub Codespaces**
+## Data and balances
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Data is stored in this browser's localStorage under `finance-data-v1`; no cloud account or bank connection is involved. All screens share one finance state. Each transaction and its balance adjustment are saved together in one storage write; failed writes show an error rather than appearing saved.
 
-## What technologies are used for this project?
+Existing `finance-accounts`, `finance-transactions`, `finance-loans`, `finance-budgets` and `finance-reminders` records are read on first use when the new key is absent. The old keys remain untouched. After the first successful change, `finance-data-v1` is authoritative. Unreadable records are not silently replaced with defaults.
 
-This project is built with:
+- Income adds to the selected account; expenses subtract from it. Money is rounded to paise.
+- Balances can be negative. Manual balance edits set the current balance and do not create transactions.
+- Loans and settlement flags are a separate ledger; they do **not** automatically move account money. Record the corresponding income/expense separately when needed.
+- Reminders are displayed inside the app. Recurrence is descriptive metadata: it does **not** advance dates or trigger background/push notifications.
+- Browser data is not encrypted or synchronized. Clearing site data removes records. There is no backup/import interface yet.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deployment
 
-## How can I deploy this project?
+Build command: `npm run build`. Output directory: `dist`. The included `vercel.json` sends application routes to `index.html`, so refreshing a page such as `/transactions` works on Vercel. Other static hosts need an equivalent single-page-app fallback.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Deployment changes are separate from local edits. The repository previously listed https://pocket-pal-five.vercel.app; this patch has not been deployed there.
 
-## Can I connect a custom domain to my Lovable project?
+## Project layout
 
-Yes, you can!
+```text
+src/pages/                 Dashboard and finance screens
+src/hooks/useFinanceData.ts Shared finance provider and storage migration
+src/hooks/useLocalStorage.ts Persistence before publishing state
+src/lib/finance.ts         Validated transaction/balance operations
+src/types/finance.ts       Finance models and categories
+src/components/            Layout, theme and reusable UI
+tests/finance.test.ts      Finance regression tests
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Stack
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+React 18 · TypeScript · Vite · Tailwind CSS · shadcn/ui · Radix UI · React Router · Recharts · date-fns
+
+## Current development status
+
+An early-stage personal project originally scaffolded with Lovable. No download counts, external users, contributors or ecosystem dependencies are claimed here. Planned improvements include backup/export, fuller browser coverage and reminder recurrence behavior.
+
+See [FIXES.md](FIXES.md) for changes and verification limits in this repair.
